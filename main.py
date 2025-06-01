@@ -1,6 +1,7 @@
 from collections import UserDict
 from datetime import datetime, timedelta
 import pickle
+from abc import ABC, abstractmethod
 
 class Field:
     def __init__(self, value):
@@ -110,6 +111,22 @@ class AddressBook(UserDict):
                 })
 
         return upcoming
+
+class View(ABC):
+    @abstractmethod
+    def display(self, message: str):
+        pass
+
+    @abstractmethod
+    def prompt(self, message: str) -> str:
+        pass
+
+class ConsoleView(View):
+    def display(self, message: str):
+        print(message)
+
+    def prompt(self, message: str) -> str:
+        return input(message)
 
 def save_data(book, filename="addressbook.pkl"):
     with open(filename, "wb") as f:
@@ -263,55 +280,58 @@ def bot_support():
 
 
 def main():
+    view = ConsoleView()
     book = load_data() 
-    print("Welcome to the assistant bot!")
+    view.display("Welcome to the assistant bot!")
+
     while True:
-        user_input = input("Enter a command: ").strip()
+        user_input = view.prompt("Enter a command: ").strip()
         if not user_input:
-            print(f"Please enter a valid command. write <help> to see all commands.")
+            view.display("Please enter a valid command. Write <help> to see all commands.")
             continue
         
         command, args = parse_input(user_input)
-        
+
         if command == "exit":
             save_data(book) 
-            print("Good bye!")
+            view.display("Good bye!")
             break
         elif command == "help":
-            print(bot_support())
+            view.display(bot_support())
 
         elif command == "hello":
-            print("How can I help you?")
+            view.display("How can I help you?")
 
         elif command == "add":
-            print(add_contact(args, book))
+            view.display(add_contact(args, book))
 
         elif command == "change":
-            print(change_contact(args, book))
+            view.display(change_contact(args, book))
 
         elif command == "phone":
-            print(show_phone(args, book))
+            view.display(show_phone(args, book))
 
         elif command == "all":
-            print(show_all(book))
+            view.display(show_all(book))
 
         elif command == "delet":
-            print(delet(args, book))
+            view.display(delet(args, book))
 
         elif command == "add-birthday":
-            print(add_birthday(args, book))
-        
+            view.display(add_birthday(args, book))
+
         elif command == "show-birthday":
-            print(show_birthday(args, book))
+            view.display(show_birthday(args, book))
 
         elif command == "birthdays":
-            print(birthdays(args, book))
+            view.display(birthdays(args, book))
 
         elif command == "remove-phone":
-            print(remove_phone_command(args, book))
+            view.display(remove_phone_command(args, book))
 
         else:
-            print("Invalid command.")
+            view.display("Invalid command.")
+
 
 if __name__ == "__main__":
     main()
