@@ -112,6 +112,8 @@ class AddressBook(UserDict):
 
         return upcoming
 
+####
+
 class View(ABC):
     @abstractmethod
     def display(self, message: str):
@@ -127,6 +129,8 @@ class ConsoleView(View):
 
     def prompt(self, message: str) -> str:
         return input(message)
+   
+####
 
 def save_data(book, filename="addressbook.pkl"):
     with open(filename, "wb") as f:
